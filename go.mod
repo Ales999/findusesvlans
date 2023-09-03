@@ -2,9 +2,11 @@ module github.com/ales999/findusesvlans
 
 go 1.21.0
 
+//replace github.com/ales999/cisaccs => ../cisaccs
+
 require (
 	github.com/alecthomas/kong v0.8.0
-	github.com/ales999/cisaccs v0.0.8
+	github.com/ales999/cisaccs v0.0.9
 )
 
 require (
@@ -17,6 +19,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	golang.org/x/crypto v0.12.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/sys v0.12.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
