@@ -11,7 +11,8 @@ import (
 func GetMacsFromCisco() {
 
 	// Проверим что файл для записи задан.
-	useoutfile := len(cli.Getmacs.Outfile) > 0
+	useoutfile := len(cli.Getmacs.Outfile) > 1 // exlude "-" with name
+	var outtofile []string
 
 	fmt.Println("Use output file:", useoutfile)
 
@@ -20,8 +21,9 @@ func GetMacsFromCisco() {
 	acc := cisaccs.NewCisAccount(cli.Getmacs.CisFileName, cli.Getmacs.PwdFileName)
 
 	for _, cishost := range cli.Getmacs.Hosts {
-		fmt.Println(cishost)
-		fmt.Println("Host:", cishost, "Port:", cli.Getmacs.PortSsh)
+		// Включим метку для парсинга:
+		fmt.Println("hostgetmac:", cishost)
+		//fmt.Println("Host:", cishost, "Port:", cli.Getmacs.PortSsh)
 		out, err := acc.OneCisExecuteSsh(cishost, cli.Getmacs.PortSsh, cmds)
 		if err != nil {
 			fmt.Printf("Error get data from host %s: %v\n", cishost, err)
@@ -29,6 +31,7 @@ func GetMacsFromCisco() {
 		}
 		// Перебираем полученные строки
 		for _, line := range out {
+			//line = strings.TrimSpace(line)
 			// Если есть необходимость пропускать что содержит исключенное
 			if len(cli.Getmacs.ExclString) > 0 {
 				// Тогда пропускаем
@@ -36,9 +39,18 @@ func GetMacsFromCisco() {
 					continue
 				}
 			}
-			// Print
-			fmt.Println(line)
+			// If set save to file
+			if useoutfile {
+				outtofile = append(outtofile, line+"\n")
+
+			} else {
+				// Print
+				fmt.Println(line)
+			}
 		}
 
+	}
+	if useoutfile {
+		WriteFile(outtofile, cli.Getmacs.Outfile)
 	}
 }
