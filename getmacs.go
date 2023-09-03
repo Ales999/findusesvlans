@@ -31,7 +31,7 @@ func GetMacsFromCisco() {
 		}
 		// Перебираем полученные строки
 		for _, line := range out {
-			//line = strings.TrimSpace(line)
+			line = strings.TrimSpace(line)
 			// Если есть необходимость пропускать что содержит исключенное
 			if len(cli.Getmacs.ExclString) > 0 {
 				// Тогда пропускаем
