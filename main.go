@@ -21,7 +21,13 @@ var cli struct {
 	} `cmd:"" help:"Parsing file with mac-address table"`
 }
 
+var skipVlans []string
+
 func main() {
+
+	//	52, 170, 246, 248(нет запросов), 242(нет запросов),  620(нет запросов), 8, 16, 6, 7, 204, 19(voice domain), 172
+
+	skipVlans = append(skipVlans, "6", "7", "8", "16", "19", "52", "170", "172", "204", "242", "246", "248", "620")
 
 	ctx := kong.Parse(&cli,
 		kong.Name("findusesvlans"),

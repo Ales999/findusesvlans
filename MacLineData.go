@@ -4,10 +4,11 @@ import "fmt"
 
 type MacLineData struct {
 	// Vlan    Mac Address       Type        Ports
-	vlan  string
-	mac   string
-	types string
-	iface string
+	vlan     string
+	mac      string
+	types    string
+	iface    string
+	hostname string
 }
 
 func NewMacLineData(
@@ -15,13 +16,15 @@ func NewMacLineData(
 	mac string,
 	types string,
 	iface string,
+	hostname string,
 ) *MacLineData {
 
 	return &MacLineData{
-		vlan:  vlan,
-		mac:   mac,
-		types: types,
-		iface: iface,
+		vlan:     vlan,
+		mac:      mac,
+		types:    types,
+		iface:    iface,
+		hostname: hostname,
 	}
 
 }
