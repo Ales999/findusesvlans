@@ -10,7 +10,7 @@ var cli struct {
 	Getmacs struct {
 		Hosts       []string `arg:"" name:"hosts"`
 		Outfile     string   `help:"Output file" type:"path"`
-		ExclString  string   `name:"exclude" help:"Exclude string if exist from mac-address line" short:"e"`
+		ExclString  []string `name:"exclude" help:"Exclude string if exist from mac-address line" short:"e"`
 		PortSsh     int      `help:"use ssh port" default:"22" short:"p" env:"CISPORT"`
 		CisFileName string   `help:"Patch to cis.yaml" type:"existingfile" env:"CISFILE"`
 		PwdFileName string   `help:"Patch to passw.json" type:"existingfile" env:"CISPWDS"`

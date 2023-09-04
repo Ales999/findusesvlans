@@ -31,14 +31,22 @@ func GetMacsFromCisco() {
 		}
 		// Перебираем полученные строки
 		for _, line := range out {
+			usedLine := true
 			line = strings.TrimSpace(line)
 			// Если есть необходимость пропускать что содержит исключенное
 			if len(cli.Getmacs.ExclString) > 0 {
 				// Тогда пропускаем
-				if strings.Contains(line, cli.Getmacs.ExclString) {
-					continue
+				for _, v := range cli.Getmacs.ExclString {
+					if strings.Contains(line, v) {
+						usedLine = false // Запрет использовать данную строку
+					}
 				}
 			}
+
+			if !usedLine {
+				continue // go get new line
+			}
+
 			// If set save to file
 			if useoutfile {
 				outtofile = append(outtofile, line+"\n")
@@ -47,6 +55,7 @@ func GetMacsFromCisco() {
 				// Print
 				fmt.Println(line)
 			}
+
 		}
 
 	}
