@@ -5,48 +5,99 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"sort"
+	"strconv"
 	"strings"
 )
 
-type HstVl struct {
-	hstname string
-	iface   string
-}
+/*
+	type HostData struct {
+		vlan  string
+		iface string
+	}
+
+	type MacDb struct {
+		ciscoName string
+		hstdat    []HostData
+	}
+
+	func NewMacDB(ciscoName string) *MacDb {
+		return &MacDb{ciscoName: ciscoName}
+	}
+*/
 
 func ParseMacs(macFileName string) {
+
+	//var ReportOut []MacDb
 
 	mlds, err := ParseMacFile(macFileName)
 	if err != nil {
 		panic(err)
 	}
 
-	var ciscoHostName string
-	lastHostName := "nonehost"
+	//var ciscoHostName string
+	//lastHostName := "nonehost"
+
+	//var mdb MacDb
+	//firstUse := true
+	//var useNext bool
 
 	//hl := make(map[string]HstVl)
+	var vlans []string
+	var firstVlan bool
 
-	for _, mld := range mlds {
-		ciscoHostName = mld.hostname
-		if len(ciscoHostName) > 0 {
-			if !strings.EqualFold(ciscoHostName, lastHostName) {
-				fmt.Printf("- %s:\n", ciscoHostName)
-				lastHostName = ciscoHostName
-			}
+	for _, hmld := range mlds {
+		firstVlan = true
+		fmt.Println("-----------------------")
+		fmt.Println("Host:", hmld.HostName)
+		vlans = []string{}
+
+		for _, mld := range hmld.mld {
+
 			// Если VLAN в списке пропускаемы - смотрим далее
 			if FindSkip(mld.vlan, &skipVlans) {
 				continue
 			}
-			fmt.Printf("Hst: %s, vlan: %s, iface: %s\n", ciscoHostName, mld.vlan, mld.iface)
+			vlans = append(vlans, mld.vlan)
+			// Debug output
+			// fmt.Println(mld.vlan, mld.iface)
 
-			//hl[mld.vlan] = HstVl{hstname: mld.hostname, iface: mld.iface}
 		}
+		// Добавим в список VLAN-ы которые обязательно должны быть.
+		vlans = append(vlans, skipVlans...)
+
+		// Удалим дубликаты
+		vlans = RemoveDuplicate(vlans)
+		// Конвертируем номера vlan-ов в Int
+		vlints := IntedStringToInts(vlans)
+		// Сортируем
+		sort.Ints(vlints)
+
+		for _, v := range vlints {
+			if firstVlan {
+				fmt.Printf(" switchport trunk allowed vlan %d", v)
+				firstVlan = false
+
+			} else {
+				fmt.Printf(",%d", v)
+			}
+		}
+		fmt.Println()
+		firstVlan = true
+
 	}
-	/*
-		for hli, hle := range hl {
-			fmt.Printf("Vlan%s, Last Iface: %s, Host: %s\n", hli, hle.iface, hle.hstname)
-		}
-	*/
+}
 
+func IntedStringToInts(strarr []string) []int {
+	var out []int
+	for _, v := range strarr {
+		nmbr, err := strconv.Atoi(v)
+		if err != nil {
+			continue
+		}
+		out = append(out, nmbr)
+	}
+	return out
 }
 
 // FindSkip - вернуть true если vl есть в массиве skip
@@ -60,16 +111,17 @@ func FindSkip(vl string, skip *[]string) bool {
 	return false
 }
 
-func ParseMacFile(macFileName string) ([]MacLineData, error) {
+func ParseMacFile(macFileName string) ([]HostMacLineData, error) {
 
 	fmt.Println("Parse MAC file:", macFileName)
 
 	MacLines := []MacLineData{}
+	var output []HostMacLineData
 
 	// Читаем ACL файл
 	aclFile, err := os.OpenFile(macFileName, os.O_RDONLY, 0644)
 	if err != nil {
-		return MacLines, fmt.Errorf("ошибка открытия файла: %s", err)
+		return output, fmt.Errorf("ошибка открытия файла: %s", err)
 	}
 	defer aclFile.Close()
 
@@ -85,15 +137,25 @@ func ParseMacFile(macFileName string) ([]MacLineData, error) {
 	aclFile.Close()
 
 	var hostName string
+	var hmld HostMacLineData
 	for _, s := range aclFileLines {
 		tr := strings.TrimSpace(s)
 		if len(tr) > 0 {
+
 			if strings.Contains(tr, "hostgetmac:") {
 				hostName = strings.TrimPrefix(tr, "hostgetmac: ")
-			}
-			a := parseArpLine(tr, hostName)
-			if len(a.vlan) > 0 {
-				MacLines = append(MacLines, a)
+				if len(MacLines) > 0 {
+					hmld.mld = MacLines
+					output = append(output, hmld)
+				}
+				// Новая
+				hmld = *NewHostMacLineData(hostName)
+
+			} else {
+				a := parseArpLine(tr)
+				if len(a.vlan) > 0 {
+					MacLines = append(MacLines, a)
+				}
 			}
 			// Добавим разделитель между .
 			// if strings.Contains(tr, "--") {
@@ -103,11 +165,11 @@ func ParseMacFile(macFileName string) ([]MacLineData, error) {
 		}
 	}
 
-	return MacLines, nil
+	return output, nil
 
 }
 
-func parseArpLine(line string, hostName string) MacLineData {
+func parseArpLine(line string) MacLineData {
 
 	/*
 	   1    548a.ba01.50b3    DYNAMIC     Gi0/43
@@ -120,7 +182,7 @@ func parseArpLine(line string, hostName string) MacLineData {
 	res := re.FindStringSubmatch(line)
 
 	if len(res) > 0 {
-		return *NewMacLineData(res[1], res[2], res[3], res[4], hostName)
+		return *NewMacLineData(res[1], res[2], res[4])
 	}
 
 	return MacLineData{}

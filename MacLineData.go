@@ -1,36 +1,40 @@
 package main
 
-import "fmt"
-
 type MacLineData struct {
-	// Vlan    Mac Address       Type        Ports
-	vlan     string
-	mac      string
-	types    string
-	iface    string
-	hostname string
+	vlan  string
+	mac   string
+	iface string
+}
+
+type HostMacLineData struct {
+	HostName string
+	mld      []MacLineData
+}
+
+func NewHostMacLineData(hostname string) *HostMacLineData {
+	return &HostMacLineData{
+		HostName: hostname,
+		mld:      []MacLineData{},
+	}
 }
 
 func NewMacLineData(
 	vlan string,
 	mac string,
-	types string,
 	iface string,
-	hostname string,
 ) *MacLineData {
 
 	return &MacLineData{
-		vlan:     vlan,
-		mac:      mac,
-		types:    types,
-		iface:    iface,
-		hostname: hostname,
+		vlan:  vlan,
+		mac:   mac,
+		iface: iface,
 	}
-
 }
 
+/*
 func (m *MacLineData) PrintData() {
 	fmt.Printf("Vlan: %v\n", m.vlan)
 	fmt.Printf("MAC: %v\n", m.mac)
 	fmt.Printf("Port: %v\n", m.iface)
 }
+*/
