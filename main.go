@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/alecthomas/kong"
 )
 
@@ -18,6 +16,8 @@ var cli struct {
 
 	Parsemac struct {
 		MacsFileName string `arg:"" name:"macsfile" type:"existingfile"`
+		Outfile      string `help:"Output file" type:"path"`
+		Reportfile   string `help:"Reporting output file" type:"path"`
 	} `cmd:"" help:"Parsing file with mac-address table"`
 }
 
@@ -39,7 +39,6 @@ func main() {
 	case "getmacs <hosts>":
 		GetMacsFromCisco()
 	case "parsemac <macsfile>":
-		fmt.Println("Use parsemac")
 		ParseMacs(cli.Parsemac.MacsFileName)
 	default:
 		panic(ctx.Command())

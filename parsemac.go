@@ -35,22 +35,39 @@ func ParseMacs(macFileName string) {
 		panic(err)
 	}
 
-	//var ciscoHostName string
-	//lastHostName := "nonehost"
+	// Проверим что файл для записи задан.
+	useoutfile := len(cli.Parsemac.Outfile) > 1    // type bool -->  true если задан выходной файл.
+	usedreport := len(cli.Parsemac.Reportfile) > 1 // type bool --> true если задан файл отчета.
+	var outtofile []string                         // массив вывода в файл отчета
+	var reprtfile []string                         // массив вывода в файл репорта
 
-	//var mdb MacDb
-	//firstUse := true
-	//var useNext bool
-
+	if useoutfile {
+		fmt.Println("Use output file:", cli.Parsemac.Outfile)
+	}
+	if usedreport {
+		fmt.Println("Use mac-report file:", cli.Parsemac.Reportfile)
+	}
 	//hl := make(map[string]HstVl)
 	var vlans []string
 	var firstVlan bool
 
 	for _, hmld := range mlds {
 		firstVlan = true
-		fmt.Println("-----------------------")
-		fmt.Println("Host:", hmld.HostName)
-		vlans = []string{}
+		var outstr string  // Строка для вывода готового набора  vlan-ов
+		vlans = []string{} // Масив vlan-ов
+
+		if useoutfile {
+			outtofile = append(outtofile, "-----------------------\n")
+			outtofile = append(outtofile, fmt.Sprintf("Host: %s\n", hmld.HostName))
+		} else {
+			fmt.Println("-----------------------")
+			fmt.Println("Host:", hmld.HostName)
+		}
+		if usedreport {
+			reprtfile = append(reprtfile, "-----------------------\n")
+			reprtfile = append(reprtfile, fmt.Sprintf("Host: %s\n", hmld.HostName))
+
+		}
 
 		for _, mld := range hmld.mld {
 
@@ -60,6 +77,9 @@ func ParseMacs(macFileName string) {
 			}
 			vlans = append(vlans, mld.vlan)
 			// Debug output
+			if usedreport {
+				reprtfile = append(reprtfile, fmt.Sprintf("Vlan: %s,\tMac: %s\tIface: %s\n", mld.vlan, mld.mac, mld.iface))
+			}
 			// fmt.Println(mld.vlan, mld.iface)
 
 		}
@@ -75,16 +95,36 @@ func ParseMacs(macFileName string) {
 
 		for _, v := range vlints {
 			if firstVlan {
-				fmt.Printf(" switchport trunk allowed vlan %d", v)
+				if useoutfile { // Если указано вывод в файл
+					outstr = fmt.Sprintf(" switchport trunk allowed vlan %d", v)
+				} else {
+					fmt.Printf(" switchport trunk allowed vlan %d", v)
+				}
 				firstVlan = false
 
 			} else {
-				fmt.Printf(",%d", v)
+				if useoutfile {
+					outstr += fmt.Sprintf(",%d", v)
+					//outtofile = append(outtofile, fmt.Sprintf(",%d", v))
+				} else {
+					fmt.Printf(",%d", v)
+				}
 			}
 		}
-		fmt.Println()
+		if useoutfile {
+			outstr += "\n"
+			outtofile = append(outtofile, outstr)
+		} else {
+			fmt.Println()
+		}
 		firstVlan = true
+	}
 
+	if useoutfile {
+		WriteOutFile(outtofile, cli.Parsemac.Outfile)
+	}
+	if usedreport {
+		WriteOutFile(reprtfile, cli.Parsemac.Reportfile)
 	}
 }
 
