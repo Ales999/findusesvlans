@@ -57,14 +57,14 @@ func ParseMacs(macFileName string) {
 		vlans = []string{} // Масив vlan-ов
 
 		if useoutfile {
-			outtofile = append(outtofile, "-----------------------\n")
-			outtofile = append(outtofile, fmt.Sprintf("Host: %s\n", hmld.HostName))
-		} else {
+			outtofile = append(outtofile, "# -----------------------\n")
+			outtofile = append(outtofile, fmt.Sprintf("# Host: %s\n", hmld.HostName))
+		} else { // Выводим на экран
 			fmt.Println("-----------------------")
 			fmt.Println("Host:", hmld.HostName)
 		}
-		if usedreport {
-			reprtfile = append(reprtfile, "-----------------------\n")
+		if usedreport { // Для записи в файл отчета.
+			reprtfile = append(reprtfile, "!-----------------------\n")
 			reprtfile = append(reprtfile, fmt.Sprintf("Host: %s\n", hmld.HostName))
 
 		}
@@ -80,7 +80,6 @@ func ParseMacs(macFileName string) {
 			if usedreport {
 				reprtfile = append(reprtfile, fmt.Sprintf("Vlan: %s,\tMac: %s\tIface: %s\n", mld.vlan, mld.mac, mld.iface))
 			}
-			// fmt.Println(mld.vlan, mld.iface)
 
 		}
 		// Добавим в список VLAN-ы которые обязательно должны быть.
@@ -96,7 +95,7 @@ func ParseMacs(macFileName string) {
 		for _, v := range vlints {
 			if firstVlan {
 				if useoutfile { // Если указано вывод в файл
-					outstr = fmt.Sprintf(" switchport trunk allowed vlan %d", v)
+					outstr = fmt.Sprintf(" interface \n switchport trunk allowed vlan %d", v)
 				} else {
 					fmt.Printf(" switchport trunk allowed vlan %d", v)
 				}
@@ -128,6 +127,7 @@ func ParseMacs(macFileName string) {
 	}
 }
 
+// IntedStringToInts - сконвертировать массив string (в которых только числа) в массив Integer
 func IntedStringToInts(strarr []string) []int {
 	var out []int
 	for _, v := range strarr {
@@ -151,6 +151,7 @@ func FindSkip(vl string, skip *[]string) bool {
 	return false
 }
 
+// ParseMacFile - открыть файл с MAC-адресами, и распасрсить его в массив хостов с данными.
 func ParseMacFile(macFileName string) ([]HostMacLineData, error) {
 
 	fmt.Println("Parse MAC file:", macFileName)
