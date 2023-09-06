@@ -2,7 +2,7 @@ package main
 
 // get code from: https://stackoverflow.com/questions/66643946/how-to-remove-duplicates-strings-or-int-from-slice-in-go
 
-// RemoveDuplicate - remove duplicate from slice
+// RemoveDuplicate - remove duplicate String Integer from slice
 //
 // Generic solution: => Go v1.18
 func RemoveDuplicate[T string | int](sliceList []T) []T {
@@ -17,8 +17,8 @@ func RemoveDuplicate[T string | int](sliceList []T) []T {
 	return list
 }
 
-// removeDuplicateStr - To remove duplicate strings from slice
-func removeDuplicateStr(strSlice []string) []string {
+// removeDuplicateStr - To remove duplicate only Strings from slice
+func RemoveDuplicateStr(strSlice []string) []string {
 	allKeys := make(map[string]bool)
 	list := []string{}
 	for _, item := range strSlice {
@@ -30,8 +30,8 @@ func removeDuplicateStr(strSlice []string) []string {
 	return list
 }
 
-// removeDuplicateInt - To remove duplicate integers from slice
-func removeDuplicateInt(intSlice []int) []int {
+// removeDuplicateInt - To remove duplicate only Integers from slice
+func RemoveDuplicateInt(intSlice []int) []int {
 	allKeys := make(map[int]bool)
 	list := []int{}
 	for _, item := range intSlice {

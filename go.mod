@@ -2,8 +2,6 @@ module github.com/ales999/findusesvlans
 
 go 1.21.0
 
-//replace github.com/ales999/cisaccs => ../cisaccs
-
 require (
 	github.com/alecthomas/kong v0.8.0
 	github.com/ales999/cisaccs v0.0.9
