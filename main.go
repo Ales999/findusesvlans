@@ -18,6 +18,8 @@ var cli struct {
 		MacsFileName string `arg:"" name:"macsfile" type:"existingfile"`
 		Outfile      string `help:"Output file" type:"path"`
 		Reportfile   string `help:"Reporting output file" type:"path"`
+		CisFileName  string `help:"Patch to cis.yaml" hidden:"" type:"existingfile" env:"CISFILE"`
+		PwdFileName  string `help:"Patch to passw.json" hidden:"" type:"existingfile" env:"CISPWDS"`
 	} `cmd:"" help:"Parsing file with mac-address table"`
 }
 

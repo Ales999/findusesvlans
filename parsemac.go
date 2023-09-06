@@ -8,6 +8,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/ales999/cisaccs"
 )
 
 /*
@@ -56,6 +58,15 @@ func ParseMacs(macFileName string) {
 		var outstr string  // Строка для вывода готового набора  vlan-ов
 		vlans = []string{} // Масив vlan-ов
 
+		acc := cisaccs.NewCisAccount(cli.Parsemac.CisFileName, cli.Parsemac.PwdFileName)
+
+		iface, err := acc.GetIfaceByHost(hmld.HostName)
+
+		if err != nil {
+			fmt.Println("Error:", err.Error())
+			continue
+		}
+
 		if useoutfile {
 			outtofile = append(outtofile, "# -----------------------\n")
 			outtofile = append(outtofile, fmt.Sprintf("# Host: %s\n", hmld.HostName))
@@ -95,7 +106,7 @@ func ParseMacs(macFileName string) {
 		for _, v := range vlints {
 			if firstVlan {
 				if useoutfile { // Если указано вывод в файл
-					outstr = fmt.Sprintf(" interface \n switchport trunk allowed vlan %d", v)
+					outstr = fmt.Sprintf(" interface %s\n switchport trunk allowed vlan %d", iface, v)
 				} else {
 					fmt.Printf(" switchport trunk allowed vlan %d", v)
 				}
