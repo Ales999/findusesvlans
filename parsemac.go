@@ -68,14 +68,13 @@ func ParseMacs(macFileName string) {
 		}
 
 		if useoutfile {
-			outtofile = append(outtofile, "# -----------------------\n")
-			outtofile = append(outtofile, fmt.Sprintf("# Host: %s\n", hmld.HostName))
+			outtofile = append(outtofile, fmt.Sprintf("!--- Host: %s\n", hmld.HostName))
 		} else { // Выводим на экран
 			fmt.Println("-----------------------")
 			fmt.Println("Host:", hmld.HostName)
 		}
 		if usedreport { // Для записи в файл отчета.
-			reprtfile = append(reprtfile, "!-----------------------\n")
+			reprtfile = append(reprtfile, "#-----------------------\n")
 			reprtfile = append(reprtfile, fmt.Sprintf("Host: %s\n", hmld.HostName))
 
 		}
@@ -122,7 +121,7 @@ func ParseMacs(macFileName string) {
 			}
 		}
 		if useoutfile {
-			outstr += "\n"
+			outstr += "\n exit\n" // Выходим из редактирования интерфейса
 			outtofile = append(outtofile, outstr)
 		} else {
 			fmt.Println()
@@ -167,8 +166,8 @@ func ParseMacFile(macFileName string) ([]HostMacLineData, error) {
 
 	fmt.Println("Parse MAC file:", macFileName)
 
-	MacLines := []MacLineData{}
-	var output []HostMacLineData
+	MacLines := []MacLineData{}  // Временный массив
+	var output []HostMacLineData // Исходящие данныы
 
 	// Читаем ACL файл
 	aclFile, err := os.OpenFile(macFileName, os.O_RDONLY, 0644)
@@ -209,12 +208,12 @@ func ParseMacFile(macFileName string) ([]HostMacLineData, error) {
 					MacLines = append(MacLines, a)
 				}
 			}
-			// Добавим разделитель между .
-			// if strings.Contains(tr, "--") {
-			// MacLines = append(MacLines, AclLineData{original: tr, iface: "original"})
-			// }
-
 		}
+	}
+	// Добавляем последний проверяемый в выходной массив
+	if len(MacLines) > 0 {
+		hmld.mld = MacLines
+		output = append(output, hmld)
 	}
 
 	return output, nil
