@@ -64,6 +64,6 @@ func GetMacsFromCisco() {
 
 	}
 	if useoutfile {
-		WriteOutFile(outtofile, cli.Getmacs.Outfile)
+		WriteOutFile(outtofile, cli.Getmacs.Outfile, cli.Getmacs.ForceOverwrite)
 	}
 }

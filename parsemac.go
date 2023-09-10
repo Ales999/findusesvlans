@@ -31,6 +31,8 @@ import (
 func ParseMacs(macFileName string) {
 
 	//var ReportOut []MacDb
+	var allinones []string // Общий для все список VLAN-ов
+	allinones = append(allinones, skipVlans...)
 
 	mlds, err := ParseMacFile(macFileName)
 	if err != nil {
@@ -70,9 +72,12 @@ func ParseMacs(macFileName string) {
 		if useoutfile {
 			outtofile = append(outtofile, fmt.Sprintf("!--- Host: %s\n", hmld.HostName))
 		} else { // Выводим на экран
-			fmt.Println("-----------------------")
+			if !cli.Parsemac.UseMaxi {
+				fmt.Println("-----------------------")
+			}
 			fmt.Println("Host:", hmld.HostName)
 		}
+
 		if usedreport { // Для записи в файл отчета.
 			reprtfile = append(reprtfile, "#-----------------------\n")
 			reprtfile = append(reprtfile, fmt.Sprintf("Host: %s\n", hmld.HostName))
@@ -92,6 +97,10 @@ func ParseMacs(macFileName string) {
 			}
 
 		}
+		// Если указано флагом выводить один итоговый
+		if cli.Parsemac.UseMaxi {
+			allinones = append(allinones, vlans...)
+		}
 		// Добавим в список VLAN-ы которые обязательно должны быть.
 		vlans = append(vlans, skipVlans...)
 
@@ -107,7 +116,9 @@ func ParseMacs(macFileName string) {
 				if useoutfile { // Если указано вывод в файл
 					outstr = fmt.Sprintf(" interface %s\n switchport trunk allowed vlan %d", iface, v)
 				} else {
-					fmt.Printf(" switchport trunk allowed vlan %d", v)
+					if !cli.Parsemac.UseMaxi {
+						fmt.Printf(" switchport trunk allowed vlan %d", v)
+					}
 				}
 				firstVlan = false
 
@@ -116,7 +127,9 @@ func ParseMacs(macFileName string) {
 					outstr += fmt.Sprintf(",%d", v)
 					//outtofile = append(outtofile, fmt.Sprintf(",%d", v))
 				} else {
-					fmt.Printf(",%d", v)
+					if !cli.Parsemac.UseMaxi {
+						fmt.Printf(",%d", v)
+					}
 				}
 			}
 		}
@@ -124,16 +137,28 @@ func ParseMacs(macFileName string) {
 			outstr += "\n exit\n" // Выходим из редактирования интерфейса
 			outtofile = append(outtofile, outstr)
 		} else {
-			fmt.Println()
+			if !cli.Parsemac.UseMaxi {
+				fmt.Println()
+			}
 		}
 		firstVlan = true
 	}
-
-	if useoutfile {
-		WriteOutFile(outtofile, cli.Parsemac.Outfile)
+	if cli.Parsemac.UseMaxi { // Если вывести ТОЛЬКО ОДНУ итоговую строку со списком vlan-ов ...
+		allinones = RemoveDuplicate(allinones)
+		vlints := IntedStringToInts(allinones) // Конвертируем в Int
+		sort.Ints(vlints)                      // Сортируем числа
+		fmt.Printf("\nswitchport trunk allowed vlan ")
+		for _, v := range vlints {
+			fmt.Printf("%d,", v)
+		}
+		fmt.Println()
+	} else {
+		if useoutfile {
+			WriteOutFile(outtofile, cli.Parsemac.Outfile, cli.Parsemac.ForceOverwrite)
+		}
 	}
 	if usedreport {
-		WriteOutFile(reprtfile, cli.Parsemac.Reportfile)
+		WriteOutFile(reprtfile, cli.Parsemac.Reportfile, cli.Parsemac.ForceOverwrite)
 	}
 }
 
