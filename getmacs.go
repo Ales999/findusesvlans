@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ales999/cisaccs"
+	"github.com/ales999/cisaccs/v2"
 )
 
 // GetMacsFromCisco забрать mac-address тфблицу из cisco

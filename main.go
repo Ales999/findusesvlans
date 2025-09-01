@@ -11,8 +11,8 @@ var cli struct {
 		ForceOverwrite bool     `name:"force" help:"Force overwrite output file file" short:"f"`
 		ExclString     []string `name:"exclude" help:"Exclude string if exist from mac-address line" short:"e"`
 		PortSsh        int      `help:"use ssh port" default:"22" short:"p" env:"CISPORT"`
-		CisFileName    string   `help:"Patch to cis.yaml" type:"existingfile" env:"CISFILE"`
-		PwdFileName    string   `help:"Patch to passw.json" type:"existingfile" env:"CISPWDS"`
+		CisFileName    string   `help:"Patch to hosts.yaml" type:"existingfile" env:"CIS2FILE"`
+		PwdFileName    string   `help:"Patch to groups.yaml" type:"existingfile" env:"CIS2PWDS"`
 	} `cmd:"" help:"Get mac-address table from cisco hosts."`
 
 	Parsemac struct {
@@ -21,8 +21,8 @@ var cli struct {
 		ForceOverwrite bool   `name:"force" help:"Force overwrite output file file" short:"f"`
 		Reportfile     string `help:"Reporting output file" type:"path"`
 		UseMaxi        bool   `help:"Использовать максимальное количество что найдем" short:"m"`
-		CisFileName    string `help:"Patch to cis.yaml" hidden:"" type:"existingfile" env:"CISFILE"`
-		PwdFileName    string `help:"Patch to passw.json" hidden:"" type:"existingfile" env:"CISPWDS"`
+		CisFileName    string `help:"Patch to hosts.yaml" hidden:"" type:"existingfile" env:"CIS2FILE"`
+		PwdFileName    string `help:"Patch to groups.yaml" hidden:"" type:"existingfile" env:"CIS2PWDS"`
 	} `cmd:"" help:"Parsing file with mac-address table"`
 }
 

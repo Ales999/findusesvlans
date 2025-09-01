@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ales999/cisaccs"
+	"github.com/ales999/cisaccs/v2"
 )
 
 /*
