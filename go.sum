@@ -6,6 +6,8 @@ github.com/alecthomas/repr v0.1.0 h1:ENn2e1+J3k09gyj2shc0dHr/yjaWSHRlrJ4DPMevDqE
 github.com/alecthomas/repr v0.1.0/go.mod h1:2kn6fqh/zIyPLmm3ugklbEi5hg5wS435eygvNfaDQL8=
 github.com/ales999/cisaccs v0.0.10 h1:FTMp6RzyJnm7B6zomb734sgo5hxTMqhlFu3eAyxTd9s=
 github.com/ales999/cisaccs v0.0.10/go.mod h1:7PRN9hQPGY7Z4QQ4rSDQQXCkgvz0boy+pTdiVQu4k8Y=
+github.com/ales999/cisaccs v0.0.11 h1:3T/WBhyiVRmo1fBToP4/HkPl03mIFHMbrwM7wCqSBQA=
+github.com/ales999/cisaccs v0.0.11/go.mod h1:7PRN9hQPGY7Z4QQ4rSDQQXCkgvz0boy+pTdiVQu4k8Y=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fsnotify/fsnotify v1.6.0 h1:n+5WquG0fcWoWp6xPWfHdbskMCQaFnG6PfBrh1Ky4HY=

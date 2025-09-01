@@ -4,7 +4,7 @@ go 1.21.0
 
 require (
 	github.com/alecthomas/kong v0.8.0
-	github.com/ales999/cisaccs v0.0.10
+	github.com/ales999/cisaccs v0.0.11
 )
 
 require (

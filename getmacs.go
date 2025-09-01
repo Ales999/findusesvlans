@@ -24,7 +24,11 @@ func GetMacsFromCisco() {
 
 	for _, cishost := range cli.Getmacs.Hosts {
 		// Включим метку для парсинга:
-		fmt.Println("hostgetmac:", cishost)
+		var prefix = fmt.Sprintf("hostgetmac: %s\n", cishost)
+		fmt.Println(prefix)
+		if useoutfile {
+			outtofile = append(outtofile, prefix)
+		}
 
 		// Получаем массив строк что вернет нам cisco
 		sshouts, err := acc.OneCisExecuteSsh(cishost, cli.Getmacs.PortSsh, cmds)
